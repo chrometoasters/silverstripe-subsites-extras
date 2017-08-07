@@ -52,11 +52,6 @@ class SubsiteFileExtension extends DataExtension
             return;
         }
 
-        // This fixes fields showing up for no reason in the list view (not moved to Details tab)
-        if ($ctrl->getAction() !== 'EditForm') {
-            return;
-        }
-
         if ($this->owner instanceof Folder) {
             // Allow to move folders from one site to another
             $sites     = Subsite::accessible_sites('CMS_ACCESS_AssetAdmin');
