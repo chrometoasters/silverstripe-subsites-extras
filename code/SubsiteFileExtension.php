@@ -157,7 +157,7 @@ class SubsiteFileExtension extends DataExtension
         // Cascade this
         $parent = $this->owner->Parent();
         $show   = $this->owner->SubsiteID && ($this->owner->SubsiteID != $parent->SubsiteID);
-        if ($show && !$parent->ShowInSubsites) {
+        if ($show && $parent->ID > 0 && !$parent->ShowInSubsites) {
             $parent->ShowInSubsites = true;
             $parent->write();
         }
