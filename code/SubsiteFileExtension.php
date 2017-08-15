@@ -95,26 +95,26 @@ class SubsiteFileExtension extends DataExtension
         //@TODO I don't think excluding if SiteTree_ImageTracking is a good idea however because of the SS 3.0 api and ManyManyList::removeAll() changing the from table after this function is called there isn't much of a choice
 
         $from  = $query->getFrom();
-        $where = $query->getWhere();
 
-        if (!isset($from['SiteTree_ImageTracking']) && !($where && preg_match('/\.(\'|"|`|)ID(\'|"|`|)/',
-                $where[0]))) {
-            $subsiteID = (int) Subsite::currentSubsiteID();
+        if (isset($from['SiteTree_ImageTracking']) || $query->filtersOnID()) {
+            return;
+        }
 
-            // The foreach is an ugly way of getting the first key :-)
-            foreach ($query->getFrom() as $tableName => $info) {
-                $where = "\"$tableName\".\"SubsiteID\" IN (0, $subsiteID)";
-                $query->addWhere($where);
-                break;
-            }
+        $subsiteID = (int) Subsite::currentSubsiteID();
 
-            $sect       = array_values($query->getSelect());
-            $isCounting = strpos($sect[0], 'COUNT') !== false;
+        // The foreach is an ugly way of getting the first key :-)
+        foreach ($query->getFrom() as $tableName => $info) {
+            $where = "\"$tableName\".\"SubsiteID\" IN (0, $subsiteID)";
+            $query->addWhere($where);
+            break;
+        }
 
-            // Ordering when deleting or counting doesn't apply
-            if (!$query->getDelete() && !$isCounting) {
-                $query->addOrderBy("\"SubsiteID\"");
-            }
+        $sect       = array_values($query->getSelect());
+        $isCounting = strpos($sect[0], 'COUNT') !== false;
+
+        // Ordering when deleting or counting doesn't apply
+        if (!$query->getDelete() && !$isCounting) {
+            $query->addOrderBy("\"SubsiteID\"");
         }
     }
 
