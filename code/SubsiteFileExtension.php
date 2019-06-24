@@ -143,10 +143,12 @@ class SubsiteFileExtension extends DataExtension
 
     public function onAfterUpload()
     {
-        $parent = $this->owner->Parent();
-
-        $this->owner->SubsiteID = Subsite::currentSubsiteID();
-
+        // If we have a parent, use it's subsite as our subsite
+        if ($this->owner->Parent()) {
+            $this->owner->SubsiteID = $this->owner->Parent()->SubsiteID;
+        } else {
+            $this->owner->SubsiteID = Subsite::currentSubsiteID();
+        }
         $this->owner->write();
     }
 
