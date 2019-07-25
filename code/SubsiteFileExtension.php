@@ -123,7 +123,9 @@ class SubsiteFileExtension extends DataExtension
         // This is required, otherwise the whole list is not displayed
         if (Controller::curr() instanceof LeftAndMain) {
             if ($this->owner->ID && Subsite::currentSubsiteID()) {
-                if ($this->owner->SubsiteID == 0 && !$this->owner->ShowInSubsites) {
+                $parent = $this->owner->Parent();
+                // file within the main site and file does not allow access to subsites, and parent does not allow to subsite
+                if ($this->owner->SubsiteID == 0 && !$this->owner->ShowInSubsites && (!$parent || !$parent->ShowInSubsites)) {
                     return false;
                 }
             }
@@ -144,10 +146,13 @@ class SubsiteFileExtension extends DataExtension
     public function onAfterUpload()
     {
         // If we have a parent, use it's subsite as our subsite
-        if ($this->owner->Parent()) {
-            $this->owner->SubsiteID = $this->owner->Parent()->SubsiteID;
+        $parent = $this->owner->Parent();
+        if ($parent) {
+            $this->owner->SubsiteID = $parent->SubsiteID;
+            $this->owner->ShowInSubsites = $parent->ShowInSubsites;
         } else {
             $this->owner->SubsiteID = Subsite::currentSubsiteID();
+            $this->owner->ShowInSubsites = false;
         }
         $this->owner->write();
     }
