@@ -253,7 +253,7 @@ class SubsiteDataObjectMany extends DataExtension
         array_shift($dataClasses);
         foreach ($dataClasses as $class) {
             $base = ClassInfo::baseDataClass($class);
-            foreach (Object::get_extensions($base) as $extension) {
+            foreach (SS_Object::get_extensions($base) as $extension) {
                 if (is_a($extension, __CLASS__, true)) {
                     $classes[] = $base;
                     break;
